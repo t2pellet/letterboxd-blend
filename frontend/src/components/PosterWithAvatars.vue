@@ -1,7 +1,7 @@
 <template>
   <div
     ref="poster"
-    class="flex flex-col">
+    class="poster flex flex-col">
     <cached-image
       :src="`${env.API_URL}/posters/${film.slug}`"
       :alt="film.name"
@@ -11,7 +11,7 @@
       v-if="!avatarsResult.isLoading"
       class="absolute bottom-0 z-20">
       <div
-        class="avatar-container flex gap-1 overflow-y-hidden pt-8 -ml-2 pl-2 w-[180px]"
+        class="avatar-container flex gap-1 overflow-y-hidden pt-8 -ml-4 pl-5 w-[180px]"
         :class="{ hovered: hovering }">
         <div
           v-for="(user, idx) in users"
@@ -19,7 +19,7 @@
           class="tooltip"
           :data-tip="user">
           <img
-            class="w-8 rounded-full opacity-25"
+            class="w-7 rounded-full opacity-25"
             :src="avatarsResult.data[user]"
             :alt="user" />
         </div>
@@ -50,6 +50,15 @@
 </script>
 
 <style lang="scss" scoped>
+  .poster {
+    transition: 0.25s all ease-in-out;
+    transform: scale(1);
+
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
+
   .avatar-container img {
     transition-duration: 0.5s;
     transition-property: all;
