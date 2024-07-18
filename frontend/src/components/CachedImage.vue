@@ -1,5 +1,5 @@
 <template>
-  <div class="relative" :style="{ width: `${width}px`, height: `${height}px` }">
+  <div class="relative" :style="{ width: `${width}px`, height: isLoading ? `${height}px` : '' }">
     <div
       v-if="isLoading"
       class="skeleton absolute pointer-events-none w-full h-full top-0" />

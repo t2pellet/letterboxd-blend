@@ -115,7 +115,7 @@
         :href="`https://letterboxd.com/film/${selectedEntry.slug}`"
         @click="(e) => e.stopPropagation()">
         <cached-image
-          class="max-w-80 sm:max-w-none"
+          class="max-w-fit sm:max-w-none"
           :src="`${env.API_URL}/posters/${selectedEntry.slug}`"
           :alt="selectedEntry.name"
           :width="400"
