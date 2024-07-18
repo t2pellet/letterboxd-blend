@@ -1,19 +1,18 @@
-FROM node:lts-alpine
-
-WORKDIR /letterboxd-blend
-
+FROM node:lts-alpine as build-stage
+WORKDIR /app
 ENV PATH /letterboxd-blend/node_modules/.bin:$PATH
-ENV VITE_API_ENDPOINT http://0.0.0.0:5000
-
+ENV VITE_API_ENDPOINT /api
+ENV NODE_ENV production
 COPY package.json .
 COPY yarn.lock .
-
 RUN npm install -g http-server
 RUN yarn install
-
 COPY . .
-
 RUN yarn build
 
-EXPOSE 8080
-CMD ["http-server", "dist", "--proxy", "http://localhost:8080?"]
+FROM nginx:stable-alpine as production-stage
+COPY --from=build-stage /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
