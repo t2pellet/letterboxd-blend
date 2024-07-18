@@ -9,4 +9,4 @@ RUN pip install --force-reinstall git+https://github.com/nmcassa/letterboxdpy.gi
 COPY . .
 
 EXPOSE 8080
-CMD ["waitress-serve", "--port=8080", "app:app"]
+CMD ["python", "app.py"]
