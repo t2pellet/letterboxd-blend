@@ -10,7 +10,7 @@
   }>();
 
   const target = ref();
-  const innerList = ref<object[]>([]);
+  const innerList = ref<any[]>([]);
   const initialized = ref(false);
   const teleporting = ref(false);
 
@@ -77,7 +77,7 @@
       :class="{ selected: selectedIndex }">
       <slot
         name="item"
-        v-bind="item" />
+        v-bind="{item}" />
     </div>
   </div>
 </template>

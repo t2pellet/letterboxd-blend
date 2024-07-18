@@ -77,7 +77,7 @@
       :infinite="false"
       :selected-index="selectedIndex"
       :item-key="(item: WatchlistMap[string]) => item.entry.slug">
-      <template #item="item: WatchlistMap[string]">
+      <template #item="{item}">
         <a
           class="relative"
           :href="`https://letterboxd.com/film/${item.entry.slug}`">
