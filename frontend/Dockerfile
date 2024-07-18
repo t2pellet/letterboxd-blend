@@ -5,7 +5,7 @@ ENV VITE_API_ENDPOINT /api
 ENV NODE_ENV production
 COPY package.json .
 COPY yarn.lock .
-RUN yarn install
+RUN yarn install --production=false
 RUN npm install -g npm-run-all
 RUN npm install -g vue-tsc
 COPY . .
