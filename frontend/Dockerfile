@@ -6,6 +6,7 @@ ENV NODE_ENV production
 COPY package.json .
 COPY yarn.lock .
 RUN yarn install
+RUN npm install -g npm-run-all
 COPY . .
 RUN yarn build
 
