@@ -7,6 +7,7 @@ COPY package.json .
 COPY yarn.lock .
 RUN yarn install
 RUN npm install -g npm-run-all
+RUN npm install -g vue-tsc
 COPY . .
 RUN yarn build
 
