@@ -15,4 +15,4 @@ app.register_blueprint(users, url_prefix='/api/users')
 app.register_blueprint(posters, url_prefix='/api/posters')
 
 if __name__ == '__main__':
-    serve(app, listen='*:8080')
+    serve(app, listen='0.0.0.0:8080 [::]:8080')
