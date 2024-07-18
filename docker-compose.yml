@@ -1,0 +1,13 @@
+services:
+  api:
+    build:
+      context: backend
+      dockerfile: Dockerfile
+    image: letterboxd-blend-api
+  client:
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    image: letterboxd-blend-client
+    ports:
+      - "8080:80"
