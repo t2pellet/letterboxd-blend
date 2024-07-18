@@ -5,12 +5,16 @@
   import { useBatchFollowing } from '@/api';
   import { useBatchExists } from '@/api/exists';
 
-  // Data
+  // Data Fetching
   const users = ref<string[]>(['', '']);
-  const blendPercentage = ref<number>(100);
-  const existsResult = useBatchExists(users);
+  const nonEmptyUsers = computed(() => users.value.filter((user) => user));
+  const existsResult = useBatchExists(computed(() => {
+    return users.value.filter((user) => user)
+  }));
   const existingUsers = computed(() => users.value.filter((user) => existsResult.value.data[user]));
   const followingResult = useBatchFollowing(existingUsers);
+
+  const blendPercentage = ref<number>(100);
   const suggestions = computed(() => followingResult.value.data);
   const canDeleteUser = computed(() => users.value.length > 2);
   const allUsersExist = computed(() => existingUsers.value.length === users.value.length);

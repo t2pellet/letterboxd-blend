@@ -8,6 +8,7 @@ const client = axios.create({
 });
 
 async function getExists(name: string): Promise<boolean> {
+  if (!name) return false;
   const result = await client.get(`${name}/exists`);
   return result.data.exists;
 }
