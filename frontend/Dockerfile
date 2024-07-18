@@ -5,7 +5,6 @@ ENV VITE_API_ENDPOINT /api
 ENV NODE_ENV production
 COPY package.json .
 COPY yarn.lock .
-RUN npm install -g http-server
 RUN yarn install
 COPY . .
 RUN yarn build
