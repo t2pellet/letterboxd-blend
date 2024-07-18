@@ -68,7 +68,7 @@
 <template>
   <div
     ref="target"
-    class="carousel carousel-center bg-neutral rounded-box space-x-4 p-4 w-fit max-w-7xl"
+    class="carousel carousel-center bg-neutral rounded-box space-x-4 p-4 max-w-full sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-lg xl:max-w-screen-xl"
     :class="{ 'snap-none': teleporting }">
     <div
       v-for="item in innerList"

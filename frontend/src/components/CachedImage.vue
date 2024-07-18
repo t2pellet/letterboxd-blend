@@ -1,9 +1,8 @@
 <template>
-  <div>
+  <div class="relative" :style="{ width: `${width}px`, height: `${height}px` }">
     <div
-      v-if="isLoading"
-      :class="`skeleton pointer-events-none`"
-      :style="{ width: `${width}px`, height: `${height}px`, top: 0 }" />
+      v-if="false"
+      class="skeleton absolute pointer-events-none w-full h-full top-0" />
     <img
       v-else
       :src="`data:image/jpeg;base64,${data}`"

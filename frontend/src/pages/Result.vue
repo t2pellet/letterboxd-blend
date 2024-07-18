@@ -15,10 +15,15 @@
     return usersStr?.split(',') ?? [];
   });
   const blend = computed(() => {
-    const number = Number(route.query.blend ?? 100);
+    const number = Number(route.query.blend ?? 75);
     if (Number.isNaN(number)) return 1;
     return number / 100;
   });
+  const count = computed(() => {
+    const number = Number(route.query.count ?? 10);
+    if (Number.isNaN(number)) return 10;
+    return number;
+  })
   const watchlistsResult = useWatchlists(...users.value);
 
   // Computed data
@@ -42,7 +47,7 @@
         return userRatio >= blend.value;
       })
       .sort((wme1, wme2) => wme2.users.length - wme1.users.length)
-      .slice(0, 20);
+      .slice(0, count.value);
   });
 
   const selectedIndex = ref<number | undefined>(undefined);

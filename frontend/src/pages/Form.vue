@@ -4,6 +4,7 @@
   import AutoComplete from '@/components/AutoComplete.vue';
   import { useBatchFollowing } from '@/api';
   import { useBatchExists } from '@/api/exists';
+  import {useFocus} from "@vueuse/core";
 
   // Data Fetching
   const users = ref<string[]>(['', '']);
@@ -14,11 +15,13 @@
   const existingUsers = computed(() => users.value.filter((user) => existsResult.value.data[user]));
   const followingResult = useBatchFollowing(existingUsers);
 
-  const blendPercentage = ref<number>(100);
+  const blendPercentage = ref<number>(75);
+  const blendCount = ref<number>(10);
   const suggestions = computed(() => followingResult.value.data);
   const canDeleteUser = computed(() => users.value.length > 2);
   const allUsersExist = computed(() => existingUsers.value.length === users.value.length);
   const isValidBlend = computed(() => blendPercentage.value >= 0 && blendPercentage.value <= 100);
+  const focused = ref(true);
 
   // Methods
   function updateUser(idx: number, user: string) {
@@ -39,7 +42,7 @@
   function viewResult() {
     if (!allUsersExist.value) return;
     const queryStr = users.value.join(',');
-    router.push(`/result?names=${queryStr}&blend=${blendPercentage.value}`);
+    router.push(`/result?names=${queryStr}&blend=${blendPercentage.value}&count=${blendCount.value}`);
   }
 </script>
 
@@ -68,19 +71,35 @@
         Remove User
       </button>
     </div>
-    <div class="form-control">
-      <label class="label">
-        <span class="label-text">Blend Threshold</span>
-      </label>
-      <label class="flex input-group items-center w-full">
-        <input
-          v-model="blendPercentage"
-          type="text"
-          placeholder="100"
-          :class="{ 'input-error': !isValidBlend }"
-          class="input input-bordered flex-grow" />
-        <span class="pl-2 pr-2">%</span>
-      </label>
+    <div
+        class="collapse collapse-arrow"
+        :class="{ 'bg-base-100': !focused, 'bg-base-200': focused }">
+      <input type="checkbox" @click="() => focused = !focused" />
+      <div class="collapse-title flex-grow-0">Detailed Settings</div>
+      <div class="collapse-content">
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Blend Threshold</span>
+          </label>
+          <label class="flex input-group items-center w-full">
+            <input
+                v-model="blendPercentage"
+                type="number"
+                :min="0"
+                :max="100"
+                placeholder="75"
+                :class="{ 'input-error': !isValidBlend }"
+                class="input input-bordered flex-grow" />
+            <span class="pl-2 pr-2">%</span>
+          </label>
+        </div>
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Blend Size</span>
+          </label>
+          <input type="text" v-model="blendCount" class="input input-bordered flex-grow" />
+        </div>
+      </div>
     </div>
     <button
       class="btn btn-primary w-full mt-4"

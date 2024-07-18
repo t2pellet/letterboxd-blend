@@ -11,7 +11,7 @@
       v-if="!avatarsResult.isLoading"
       class="absolute bottom-0 z-20">
       <div
-        class="avatar-container flex gap-1 overflow-y-hidden pt-8 pl-1 w-32"
+        class="avatar-container flex gap-1 overflow-y-hidden pt-8 -ml-2 pl-2 w-[180px]"
         :class="{ hovered: hovering }">
         <div
           v-for="(user, idx) in users"
