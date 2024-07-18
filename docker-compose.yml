@@ -1,15 +1,7 @@
-version: '3'
-
 services:
-  letterboxd-api:
+  letterboxd-blend:
     build:
-      context: backend
-      dockerfile: Dockerfile
-    ports:
-      - "8080"
-  client:
-    build:
-      context: frontend
+      context: .
       dockerfile: Dockerfile
     ports:
       - "80:80"
