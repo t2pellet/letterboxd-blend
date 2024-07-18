@@ -1,7 +1,7 @@
 <template>
   <div class="relative" :style="{ width: `${width}px`, height: `${height}px` }">
     <div
-      v-if="false"
+      v-if="isLoading"
       class="skeleton absolute pointer-events-none w-full h-full top-0" />
     <img
       v-else
