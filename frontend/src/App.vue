@@ -1,5 +1,10 @@
 <template>
-  <main class="flex min-h-screen flex-col items-center px-8 sm:px-24 py-4 sm:py-12">
+  <header class="sticky">
+    <div class="navbar sticky flex-row-reverse px-4 sm:px-8 py-1 sm:py-4">
+      <theme-switch />
+    </div>
+  </header>
+  <main class="flex flex-col flex-grow items-center px-8 sm:px-24 py-4 sm:py-12">
     <RouterLink to="/">
       <img
         class="mb-4 rounded-xl"
@@ -13,4 +18,6 @@
     <RouterView />
   </main>
 </template>
-<script setup lang="ts"></script>
+<script setup lang="ts">
+  import ThemeSwitch from '@/components/ThemeSwitch.vue';
+</script>

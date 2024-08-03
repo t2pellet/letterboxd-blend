@@ -1,7 +1,7 @@
 import type { UseQueryReturnType } from '@tanstack/vue-query';
 import { useQueries, useQuery } from '@tanstack/vue-query';
 import type Watchlist from '@/types/watchlist';
-import axios, { AxiosError } from 'axios';
+import axios, { type AxiosError } from 'axios';
 
 const client = axios.create({
   baseURL: `${import.meta.env.VITE_API_ENDPOINT}/users`,
