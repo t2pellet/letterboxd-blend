@@ -18,7 +18,9 @@
 
   const blendPercentage = ref<number>(75);
   const blendCount = ref<number>(10);
-  const suggestions = computed(() => followingResult.value.data);
+  const suggestions = computed(() => {
+    return Object.values(followingResult.value.data).reduce((t, v) => [...t, ...v], []);
+  });
   const canDeleteUser = computed(() => users.value.length > 2);
   const allUsersExist = computed(() => existingUsers.value.length === users.value.length);
   const isValidBlend = computed(() => blendPercentage.value >= 0 && blendPercentage.value <= 100);
