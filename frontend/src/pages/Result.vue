@@ -23,7 +23,7 @@
     const number = Number(route.query.count ?? 10);
     if (Number.isNaN(number)) return 10;
     return number;
-  })
+  });
   const watchlistsResult = useWatchlists(...users.value);
 
   // Computed data
@@ -82,7 +82,7 @@
       :infinite="false"
       :selected-index="selectedIndex"
       :item-key="(item: WatchlistMap[string]) => item.entry.slug">
-      <template #item="{item}">
+      <template #item="{ item }">
         <a
           class="relative"
           :href="`https://letterboxd.com/film/${item.entry.slug}`">
@@ -99,7 +99,13 @@
       Pick for me
     </button>
   </template>
-  <template v-else> Nothing in common :( </template>
+  <template v-else>
+    <img
+      :width="280"
+      src="/img/nothing.jpg"
+      class="border-4 rounded-sm"
+      alt="Nothing" />
+  </template>
   <RouterLink to="/">
     <button class="btn btn-secondary btn-outline w-72 mt-4">Go Back</button>
   </RouterLink>

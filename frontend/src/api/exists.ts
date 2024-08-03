@@ -1,7 +1,7 @@
 import axios from 'axios';
 import type { Ref } from 'vue';
-import { useQueries, useQuery } from '@tanstack/vue-query';
-import { computed } from 'vue';
+import { useQuery } from '@tanstack/vue-query';
+import { useBatchQuery } from '@/api/api';
 
 const client = axios.create({
   baseURL: `${import.meta.env.VITE_API_ENDPOINT}/users`,
@@ -20,26 +20,25 @@ export function useExists(name: Ref<string>) {
   });
 }
 
-export function useBatchExists(names: Ref<string[]>) {
-  const queries = computed(() => {
-    return names.value.map((name) => ({
-      queryKey: ['exists', name],
-      queryFn: async () => ({ name, exists: await getExists(name) }),
-    }));
-  });
-  return useQueries({
-    queries,
-    combine: (results) => {
-      return {
-        data: results
-          .map((result) => result.data)
-          .filter((result) => !!result)
-          .reduce((total: Record<string, boolean>, result) => {
-            total[result.name] = result.exists;
-            return total;
-          }, {}),
-        isLoading: results.some((result) => result.isLoading),
-      };
+export function useBatchExists(names: Ref<string[]>, debounceMs = 150) {
+  return useBatchQuery(
+    names,
+    (name) => ['exists', name],
+    async (name) => {
+      const exists = await getExists(name);
+      return { name, exists };
     },
-  });
+    (total, result: { name: string; exists?: boolean }) => {
+      if (result.exists !== undefined) {
+        total[result.name] = result.exists;
+      }
+      return total;
+    },
+    {
+      debounceMs,
+      placeholderData: (name) => ({
+        name,
+      }),
+    },
+  );
 }

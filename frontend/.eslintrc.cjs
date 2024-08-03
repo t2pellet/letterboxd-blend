@@ -16,6 +16,12 @@ module.exports = {
     "no-unused-vars": "off",
     "@typescript-eslint/no-unused-vars": ["error"],
     'unused-imports/no-unused-imports': 'error',
+    '@typescript-eslint/consistent-type-imports': [
+      'error',
+      {
+        fixStyle: 'inline-type-imports',
+      },
+    ]
   },
   plugins: ['vue', 'prettier', '@typescript-eslint', 'import', 'unused-imports'],
   parser: "vue-eslint-parser",
@@ -27,7 +33,7 @@ module.exports = {
   settings: {
     'import/resolver': {
       alias: {
-        map: [['@', './frontend']],
+        map: [['@', './src']],
         extensions: ['.ts', '.js', '.vue']
       },
     },

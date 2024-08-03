@@ -1,51 +1,27 @@
-<template>
-  <div
-    ref="input"
-    class="relative py-1"
-    @focusin="() => (focused = true)">
-    <input
-      v-model="search"
-      type="text"
-      class="input input-bordered w-full max-w-lg"
-      :class="{ 'input-error': warning, 'input-success': success }"
-      :placeholder="placeholder"
-      @keyup.enter="selectFirstResult" />
-    <ul
-      v-if="focused && !isSuggestionSelected && results.length"
-      class="menu dropdown-content bg-base-100 z-[1] absolute w-full max-h-40 overflow-y-scroll flex-nowrap">
-      <li
-        v-for="(result, idx) in results"
-        :key="`result-${idx}`">
-        <a @click="() => (search = result)">
-          {{ result }}
-        </a>
-      </li>
-    </ul>
-  </div>
-</template>
-
 <script setup lang="ts">
   import { useVueFuse } from 'vue-fuse';
   import { computed, ref, watch } from 'vue';
-  import { onClickOutside } from '@vueuse/core';
+  import { useFocusWithin } from '@vueuse/core';
 
   // Setup
   const props = defineProps<{
     placeholder: string;
     suggestions: string[];
-    showSuggestions: boolean;
     warning?: boolean;
     success?: boolean;
+    loading?: boolean;
   }>();
   const emit = defineEmits(['change']);
   const { search, results, loadItems } = useVueFuse(props.suggestions);
 
   // Computed
   const isSuggestionSelected = computed(() => props.suggestions.includes(search.value));
+  const isExpanded = computed(() => focused.value && !isSuggestionSelected.value && !!results.value.length);
 
   // Focus
   const input = ref();
-  const focused = ref(false);
+  const inputBox = ref();
+  const { focused } = useFocusWithin(input);
 
   // Watchers
   watch(search, (current) => {
@@ -57,9 +33,12 @@
       loadItems(current);
     },
   );
-  onClickOutside(input, () => {
-    focused.value = false;
-  });
+  watch(
+    () => props.loading,
+    (current) => {
+      console.log('loading: ' + current);
+    },
+  );
 
   // Functions
   function selectFirstResult() {
@@ -68,4 +47,46 @@
       search.value = firstResult;
     }
   }
+  function selectResult(result: string) {
+    search.value = result;
+    inputBox.value.focus();
+  }
 </script>
+
+<template>
+  <div
+    ref="input"
+    class="relative py-1">
+    <div class="flex items-center">
+      <input
+        ref="inputBox"
+        v-model="search"
+        type="text"
+        class="input input-bordered w-full max-w-lg"
+        :class="{ 'input-error': warning, 'input-success': success }"
+        :placeholder="placeholder"
+        :aria-expanded="isExpanded"
+        aria-autocomplete="list"
+        @keyup.enter="selectFirstResult" />
+      <span
+        v-if="loading"
+        inert
+        class="absolute right-4 loading loading-spinner loading-xs"></span>
+    </div>
+    <ul
+      v-show="isExpanded"
+      role="listbox"
+      class="menu dropdown-content bg-base-100 z-[1] absolute w-full max-h-40 overflow-y-scroll flex-nowrap">
+      <li
+        v-for="(result, idx) in results"
+        :key="`result-${idx}`"
+        :tabindex="0"
+        @keyup.space="() => selectResult(result)"
+        @keyup.enter="selectResult(result)">
+        <a @click="() => selectResult(result)">
+          {{ result }}
+        </a>
+      </li>
+    </ul>
+  </div>
+</template>

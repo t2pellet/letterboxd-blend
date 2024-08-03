@@ -4,16 +4,17 @@
   import AutoComplete from '@/components/AutoComplete.vue';
   import { useBatchFollowing } from '@/api';
   import { useBatchExists } from '@/api/exists';
-  import {useFocus} from "@vueuse/core";
 
   // Data Fetching
   const users = ref<string[]>(['', '']);
-  const nonEmptyUsers = computed(() => users.value.filter((user) => user));
-  const existsResult = useBatchExists(computed(() => {
-    return users.value.filter((user) => user)
-  }));
+  const existsResult = useBatchExists(
+    computed(() => {
+      return users.value.filter((user) => user);
+    }),
+    100,
+  );
   const existingUsers = computed(() => users.value.filter((user) => existsResult.value.data[user]));
-  const followingResult = useBatchFollowing(existingUsers);
+  const followingResult = useBatchFollowing(existingUsers, 200);
 
   const blendPercentage = ref<number>(75);
   const blendCount = ref<number>(10);
@@ -39,6 +40,9 @@
   function isExistingUser(user: string) {
     return existsResult.value.data[user] === true;
   }
+  function isLoadingUser(user: string) {
+    return !!user?.length && existsResult.value.data[user] === undefined;
+  }
   function viewResult() {
     if (!allUsersExist.value) return;
     const queryStr = users.value.join(',');
@@ -54,9 +58,9 @@
       class="w-full"
       placeholder="Letterboxd Username"
       :suggestions="suggestions"
-      :show-suggestions="idx !== 0 && !followingResult.isLoading"
       :warning="isMissingUser(user)"
       :success="isExistingUser(user)"
+      :loading="isLoadingUser(user)"
       @change="(value: string) => updateUser(idx, value)" />
     <div class="flex gap-2">
       <button
@@ -72,9 +76,11 @@
       </button>
     </div>
     <div
-        class="collapse collapse-arrow"
-        :class="{ 'bg-base-100': !focused, 'bg-base-200': focused }">
-      <input type="checkbox" @click="() => focused = !focused" />
+      class="collapse collapse-arrow"
+      :class="{ 'bg-base-100': !focused, 'bg-base-200': focused }">
+      <input
+        type="checkbox"
+        @click="() => (focused = !focused)" />
       <div class="collapse-title flex-grow-0">Detailed Settings</div>
       <div class="collapse-content">
         <div class="form-control">
@@ -83,13 +89,13 @@
           </label>
           <label class="flex input-group items-center w-full">
             <input
-                v-model="blendPercentage"
-                type="number"
-                :min="0"
-                :max="100"
-                placeholder="75"
-                :class="{ 'input-error': !isValidBlend }"
-                class="input input-bordered flex-grow" />
+              v-model="blendPercentage"
+              type="number"
+              :min="0"
+              :max="100"
+              placeholder="75"
+              :class="{ 'input-error': !isValidBlend }"
+              class="input input-bordered flex-grow" />
             <span class="pl-2 pr-2">%</span>
           </label>
         </div>
@@ -97,7 +103,10 @@
           <label class="label">
             <span class="label-text">Blend Size</span>
           </label>
-          <input type="text" v-model="blendCount" class="input input-bordered flex-grow" />
+          <input
+            v-model="blendCount"
+            type="text"
+            class="input input-bordered flex-grow" />
         </div>
       </div>
     </div>
