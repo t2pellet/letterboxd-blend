@@ -4,6 +4,7 @@
   import AutoComplete from '@/components/AutoComplete.vue';
   import { useBatchFollowing } from '@/api';
   import { useBatchExists } from '@/api/exists';
+  import { uniq } from 'lodash';
 
   // Data Fetching
   const users = ref<string[]>(['', '']);
@@ -19,7 +20,7 @@
   const blendPercentage = ref<number>(75);
   const blendCount = ref<number>(10);
   const suggestions = computed(() => {
-    return Object.values(followingResult.value.data).reduce((t, v) => [...t, ...v], []);
+    return uniq(Object.values(followingResult.value.data).reduce((t, v) => [...t, ...v], []));
   });
   const canDeleteUser = computed(() => users.value.length > 2);
   const allUsersExist = computed(() => existingUsers.value.length === users.value.length);
