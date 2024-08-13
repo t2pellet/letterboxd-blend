@@ -1,11 +1,10 @@
 <script setup lang="ts">
-  import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+  import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
   import { useInfiniteScroll } from '@vueuse/core';
 
   const props = defineProps<{
     list: object[];
     itemKey: string | ((item: object) => string);
-    selectedIndex?: number;
     infinite?: boolean;
   }>();
 
@@ -52,17 +51,6 @@
   onBeforeUnmount(() => target.value.removeEventListener('scrollend', initialize));
   useInfiniteScroll(target, () => teleport(true), { direction: 'left', canLoadMore: () => props.infinite });
   useInfiniteScroll(target, () => teleport(false), { direction: 'right', canLoadMore: () => props.infinite });
-  watch(
-    () => props.selectedIndex,
-    async (value) => {
-      if (value) {
-        target.value.children[value].scrollIntoView({
-          inline: 'center',
-          behavior: 'smooth',
-        });
-      }
-    },
-  );
 </script>
 
 <template>
@@ -73,11 +61,10 @@
     <div
       v-for="item in innerList"
       :key="getKey(item)"
-      class="carousel-item flex flex-col text-center relative"
-      :class="{ selected: selectedIndex }">
+      class="carousel-item flex flex-col text-center relative">
       <slot
         name="item"
-        v-bind="{item}" />
+        v-bind="{ item }" />
     </div>
   </div>
 </template>
