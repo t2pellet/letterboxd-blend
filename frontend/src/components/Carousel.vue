@@ -9,9 +9,10 @@
   }>();
 
   const target = ref();
-  const innerList = ref<any[]>([]);
+  const innerList = ref<object[]>([]);
   const initialized = ref(false);
   const teleporting = ref(false);
+  const selecting = ref(false);
 
   // Methods
   function getKey(entry: object) {
@@ -51,6 +52,18 @@
   onBeforeUnmount(() => target.value.removeEventListener('scrollend', initialize));
   useInfiniteScroll(target, () => teleport(true), { direction: 'left', canLoadMore: () => props.infinite });
   useInfiniteScroll(target, () => teleport(false), { direction: 'right', canLoadMore: () => props.infinite });
+
+  // Expose
+  async function select() {
+    selecting.value = true;
+    return new Promise<void>((resolve) => {
+      setTimeout(() => {
+        selecting.value = false;
+        resolve();
+      }, 1500);
+    });
+  }
+  defineExpose({ select, selecting });
 </script>
 
 <template>
@@ -61,6 +74,7 @@
     <div
       v-for="item in innerList"
       :key="getKey(item)"
+      :class="{ selected: selecting }">
       class="carousel-item flex flex-col text-center relative">
       <slot
         name="item"
