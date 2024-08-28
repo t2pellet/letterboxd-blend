@@ -3,18 +3,21 @@ from letterboxdpy import user
 
 users = Blueprint('user', __name__)
 
+
 @users.route('/<name>/exists')
 def get_exists(name):
     try:
         user.User(name)
-        return jsonify({ 'exists': True })
+        return jsonify({'exists': True})
     except Exception:
-        return jsonify({ 'exists': False })
+        return jsonify({'exists': False})
+
 
 @users.route("/<name>/avatar")
 def get_profile(name):
     user_instance = user.User(name)
     return user_instance.avatar
+
 
 @users.route("/<name>/watchlist")
 def get_watchlist(name):  # put application's code here
