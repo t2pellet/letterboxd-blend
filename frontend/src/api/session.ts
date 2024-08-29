@@ -41,5 +41,8 @@ export function useSessionInfo(code: MaybeRef<string>) {
     queryKey: ['session', code],
     queryFn: async () => await getSession(deboxMaybeRef(code)),
     staleTime: 0,
+    gcTime: 0,
+    refetchOnReconnect: true,
+    refetchOnMount: true,
   });
 }

@@ -27,7 +27,7 @@
       like,
     });
     if (idx.value + 1 < blendList.value.length) {
-      ++idx.value;
+      idx.value = idx.value + 1;
     }
   }
 </script>

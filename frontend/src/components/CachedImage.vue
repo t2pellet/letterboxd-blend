@@ -28,7 +28,7 @@
   }>();
 
   const { data, isPending } = useQuery({
-    queryKey: ['img', props.src],
+    queryKey: ['img', () => props.src],
     gcTime: 1000 * 60 * 60 * 24 * 7, // 1 week
     staleTime: 1000 * 60 * 60 * 24, // 1 day
     queryFn: async () => {
