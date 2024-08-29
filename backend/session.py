@@ -81,6 +81,8 @@ def rate_movie(data):
             if user in rooms[room].ratings:
                 if movie not in rooms[room].ratings[user] or not rooms[room].ratings[user][movie]:
                     return
+            else:
+                return
         rooms[room].state = 'match'
         rooms[room].match = movie
         emit('matched', movie, to=room)
