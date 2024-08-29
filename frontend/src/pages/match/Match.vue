@@ -78,7 +78,7 @@
 </script>
 
 <template>
-  <div class="flex flex-col gap-2">
+  <div class="flex flex-col gap-2 items-center">
     <template v-if="isPending">
       <span class="loading loading-spinner loading-lg" />
     </template>

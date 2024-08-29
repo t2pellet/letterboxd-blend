@@ -52,7 +52,7 @@
 
   // Computed
   const avatarsClass = computed(() => {
-    let str = `avatar-container flex gap-1 overflow-y-hidden pt-8 -ml-4 pl-5 w-[${props.width}px]`;
+    let str = `avatar-container flex gap-1 overflow-y-clip overflow-x-visible pt-8 -ml-4 pl-5 w-[${props.width}px]`;
     if (hovering.value) str = str + ' hovered';
     return str;
   });

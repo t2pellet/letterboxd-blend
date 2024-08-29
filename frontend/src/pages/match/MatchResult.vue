@@ -6,6 +6,7 @@
     :users="matchUsers"
     :width="270"
     :clickable="true" />
+  <h1 class="text-lg text-primary text-center mt-2"><b class="italic">It's a match!</b> Get the 🍿 !</h1>
 </template>
 <script setup lang="ts">
   import { computed, inject, type Ref } from 'vue';

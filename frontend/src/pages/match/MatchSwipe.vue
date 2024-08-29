@@ -13,8 +13,7 @@
 
   // Fetched Data
   const users = computed(() => session?.value?.users ?? []);
-  const blendResult = useBlend(users, 50, 50);
-  const blendList = computed(() => blendResult.value.data ?? []);
+  const { data: blendList, isPending } = useBlend(users, 50, 50);
 
   // Reactive data
   const idx = ref(0);
@@ -33,10 +32,10 @@
 </script>
 
 <template>
-  <template v-if="blendResult.isPending">
+  <template v-if="isPending">
     <span class="loading loading-spinner loading-lg" />
   </template>
-  <template v-else>
+  <template v-else-if="blendList.length">
     <poster-with-avatars
       :film="blendList[idx].entry"
       :users="blendList[idx].users" />

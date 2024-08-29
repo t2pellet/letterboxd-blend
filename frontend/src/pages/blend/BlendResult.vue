@@ -31,8 +31,7 @@
     if (Number.isNaN(number)) return 10;
     return number;
   });
-  const blendResult = useBlend(users, blend, count);
-  const blendedList = computed(() => blendResult.value.data ?? []);
+  const { data: blendedList, isPending } = useBlend(users, blend, count);
 
   const selectedIndex = ref<number | undefined>(undefined);
   const selectedEntry = computed<WatchlistEntry | null>(() =>
@@ -53,7 +52,7 @@
 </script>
 
 <template>
-  <template v-if="blendResult.isPending">
+  <template v-if="isPending">
     <span class="loading loading-spinner loading-lg"></span>
   </template>
   <template v-else-if="blendedList.length">

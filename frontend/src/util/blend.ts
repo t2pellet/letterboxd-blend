@@ -1,10 +1,33 @@
 import type { MaybeRef, Ref } from 'vue';
 import { useWatchlists } from '@/api';
-import { computed } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import type Watchlist from '@/types/watchlist';
 import type { WatchlistEntry } from '@/types/watchlist';
-import { uniqBy } from 'lodash';
 import { deboxMaybeRef } from '@/util/debox';
+
+interface MovieMapValue {
+  entry: WatchlistEntry;
+  users: string[];
+}
+
+function watchlistsToMovieMap(watchlists: Record<string, Watchlist>, minCount = 0) {
+  const movieMap: Record<string, MovieMapValue> = {};
+  const users = Object.keys(watchlists);
+  // Build Map
+  for (const user of users) {
+    const entries = watchlists[user].data;
+    for (const entry of entries) {
+      if (!movieMap[entry.slug]) movieMap[entry.slug] = { entry, users: [] };
+      movieMap[entry.slug].users.push(user);
+    }
+  }
+  // Remove below minCount
+  const movies = Object.keys(movieMap);
+  for (const movie of movies) {
+    if (movieMap[movie].users.length < minCount) delete movieMap[movie];
+  }
+  return movieMap;
+}
 
 export function usersForSlug(watchlists: Record<string, Watchlist>, slug: string) {
   const watchlistList = Object.entries(watchlists);
@@ -24,23 +47,34 @@ export function useBlend(users: Ref<string[]>, threshold: MaybeRef<number>, coun
     const formattedThreshold = deboxMaybeRef(threshold) > 1 ? deboxMaybeRef(threshold) / 100 : deboxMaybeRef(threshold);
     return Math.ceil(usersCount * formattedThreshold);
   });
-  const data = computed(() => {
-    if (watchlistsResult.value.isPending) return undefined;
-    const values = Object.values(watchlistsResult.value.data).reduce((total: WatchlistEntry[], current: Watchlist) => {
-      return [...total, ...current.data];
-    }, []);
-    const uniqValues = uniqBy(values, 'slug');
-    const userMap: Record<string, string[]> = {};
-    for (const we of uniqValues) {
-      userMap[we.slug] = usersForSlug(watchlistsResult.value.data, we.slug);
+
+  // Data
+  const isPending = computed(() => watchlistsResult.value.isPending || isPendingInternal.value);
+  const isPendingInternal = ref(true);
+  const data = ref<MovieMapValue[]>([]);
+
+  function getBlendedList(watchlists: Record<string, Watchlist>, countNeeded: number) {
+    const movieMap = watchlistsToMovieMap(watchlists, countNeeded);
+    return Object.keys(movieMap)
+      .map((slug) => movieMap[slug])
+      .sort((m1, m2) => m1.users.length - m2.users.length)
+      .slice(0, deboxMaybeRef(count));
+  }
+
+  watch(
+    () => isPending.value,
+    (value) => {
+      if (!value) {
+        data.value = getBlendedList(watchlistsResult.value.data, countNeeded.value);
+        isPendingInternal.value = false;
+      }
+    },
+  );
+  onMounted(() => {
+    if (!watchlistsResult.value.isPending) {
+      data.value = getBlendedList(watchlistsResult.value.data, countNeeded.value);
+      isPendingInternal.value = false;
     }
-    return uniqValues
-      .filter((v) => userMap[v.slug].length >= countNeeded.value)
-      .sort((we1, we2) => {
-        return (userMap[we1.slug]?.length ?? 0) - (userMap[we2.slug]?.length ?? 0);
-      })
-      .slice(0, deboxMaybeRef(count))
-      .map((entry) => ({ users: userMap[entry.slug], entry }));
   });
-  return computed(() => ({ data: data.value, isPending: watchlistsResult.value.isPending }));
+  return { data, isPending };
 }
