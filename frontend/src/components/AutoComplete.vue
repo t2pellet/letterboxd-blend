@@ -1,18 +1,23 @@
 <script setup lang="ts">
   import { useVueFuse } from 'vue-fuse';
-  import { computed, ref, watch } from 'vue';
+  import { computed, onMounted, ref, watch } from 'vue';
   import { useFocusWithin } from '@vueuse/core';
 
   // Setup
-  const props = defineProps<{
-    placeholder: string;
-    suggestions: string[];
-    warning?: boolean;
-    success?: boolean;
-    loading?: boolean;
-  }>();
+  const props = withDefaults(
+    defineProps<{
+      placeholder: string;
+      initialValue?: string;
+      suggestions?: string[];
+      warning?: boolean;
+      success?: boolean;
+      loading?: boolean;
+    }>(),
+    { suggestions: () => [], initialValue: '', warning: false, success: false, loading: false },
+  );
   const emit = defineEmits(['change']);
-  const { search, results, loadItems } = useVueFuse(props.suggestions);
+
+  const { search, results, loadItems } = useVueFuse(props.suggestions, {});
 
   // Computed
   const isSuggestionSelected = computed(() => props.suggestions.includes(search.value));
@@ -33,12 +38,7 @@
       loadItems(current);
     },
   );
-  watch(
-    () => props.loading,
-    (current) => {
-      console.log('loading: ' + current);
-    },
-  );
+  onMounted(() => (search.value = props.initialValue));
 
   // Functions
   function selectFirstResult() {
@@ -56,7 +56,7 @@
 <template>
   <div
     ref="input"
-    class="relative py-1">
+    class="relative">
     <div class="flex items-center">
       <input
         ref="inputBox"

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-  import { useWatchlists } from '@/api';
   import { useRoute } from 'vue-router';
   import { computed, ref } from 'vue';
   import type { WatchlistEntry } from '@/types/watchlist';
@@ -7,13 +6,21 @@
   import InfiniteCarousel from '@/components/Carousel.vue';
   import CachedImage from '@/components/CachedImage.vue';
   import PosterWithAvatars from '@/components/PosterWithAvatars.vue';
+  import { useBlend } from '@/util/blend';
 
-  // Data fetching
+  // Setup
+  type WatchlistItem = { users: string[]; entry: WatchlistEntry };
   const route = useRoute();
   const users = computed(() => {
     const usersStr = route.query.names as string;
     return usersStr?.split(',') ?? [];
   });
+
+  // Data
+  const carousel = ref();
+
+  // Computed
+
   const blend = computed(() => {
     const number = Number(route.query.blend ?? 75);
     if (Number.isNaN(number)) return 1;
@@ -24,31 +31,8 @@
     if (Number.isNaN(number)) return 10;
     return number;
   });
-  const watchlistsResult = useWatchlists(...users.value);
-
-  // Computed data
-  type WatchlistMap = { [slug: string]: { entry: WatchlistEntry; users: string[] } };
-  const blendedList = computed<WatchlistMap[string][]>(() => {
-    const watchlistMap: WatchlistMap = {};
-    Object.values(watchlistsResult.value.data).forEach((watchlist) => {
-      const data = watchlist.data;
-      data.forEach((entry) => {
-        if (watchlistMap[entry.slug]) {
-          watchlistMap[entry.slug].users.push(watchlist.name);
-        } else {
-          watchlistMap[entry.slug] = { entry, users: [watchlist.name] };
-        }
-      });
-    });
-    return Object.values(watchlistMap)
-      .filter((wme) => {
-        const userCount = wme.users.length;
-        const userRatio = userCount / users.value.length;
-        return userRatio >= blend.value;
-      })
-      .sort((wme1, wme2) => wme2.users.length - wme1.users.length)
-      .slice(0, count.value);
-  });
+  const blendResult = useBlend(users, blend, count);
+  const blendedList = computed(() => blendResult.value.data ?? []);
 
   const selectedIndex = ref<number | undefined>(undefined);
   const selectedEntry = computed<WatchlistEntry | null>(() =>
@@ -56,15 +40,11 @@
   );
 
   // Selecting stuff
-  const isSelecting = ref(false);
   const selectedModalRef = ref<HTMLDialogElement>();
-  function chooseRandomIndex() {
+  async function chooseRandomIndex() {
     selectedIndex.value = Math.floor(Math.random() * blendedList.value.length);
-    isSelecting.value = true;
-    setTimeout(() => {
-      selectedModalRef.value?.showModal();
-      isSelecting.value = false;
-    }, 1500);
+    await carousel.value.select();
+    selectedModalRef.value?.showModal();
   }
   function closeModal() {
     selectedModalRef.value?.close();
@@ -73,15 +53,15 @@
 </script>
 
 <template>
-  <template v-if="watchlistsResult.isLoading">
+  <template v-if="blendResult.isPending">
     <span class="loading loading-spinner loading-lg"></span>
   </template>
-  <template v-else-if="blendedList?.length">
+  <template v-else-if="blendedList.length">
     <infinite-carousel
+      ref="carousel"
       :list="blendedList"
       :infinite="false"
-      :selected-index="selectedIndex"
-      :item-key="(item: WatchlistMap[string]) => item.entry.slug">
+      :item-key="({ entry }: WatchlistItem) => entry.slug">
       <template #item="{ item }">
         <a
           class="relative"
@@ -94,7 +74,7 @@
     </infinite-carousel>
     <button
       class="btn btn-primary w-72 mt-4"
-      :disabled="isSelecting"
+      :disabled="carousel?.selecting"
       @click="chooseRandomIndex">
       Pick for me
     </button>

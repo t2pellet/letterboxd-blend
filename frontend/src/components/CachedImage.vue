@@ -1,7 +1,9 @@
 <template>
-  <div class="relative" :style="{ width: `${width}px`, height: isLoading ? `${height}px` : '' }">
+  <div
+    class="relative"
+    :style="{ width: `${width}px`, height: isPending ? `${height}px` : '' }">
     <div
-      v-if="isLoading"
+      v-if="isPending"
       class="skeleton absolute pointer-events-none w-full h-full top-0" />
     <img
       v-else
@@ -25,7 +27,7 @@
     height: number;
   }>();
 
-  const { data, isLoading } = useQuery({
+  const { data, isPending } = useQuery({
     queryKey: ['img', props.src],
     gcTime: 1000 * 60 * 60 * 24 * 7, // 1 week
     staleTime: 1000 * 60 * 60 * 24, // 1 day

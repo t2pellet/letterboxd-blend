@@ -37,7 +37,7 @@ export function useBatchAvatar(names: Ref<string[]>) {
             total[value.name] = value.url;
             return total;
           }, {}),
-        isLoading: results.some((result) => result.isLoading),
+        isPending: results.some((result) => result.isPending),
       };
     },
   });

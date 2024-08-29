@@ -1,6 +1,5 @@
 import random
 import string
-from json import loads
 
 from app import sio
 from flask import Blueprint, Response, request, jsonify
@@ -14,9 +13,10 @@ class Room:
     def __init__(self, code, owner):
         self.code = code
         self.owner = owner
-        self.started = False
+        self.state = 'wait' # wait / swipe / match
         self.users = [owner]
         self.ratings = {}
+        self.match = None
 
 
 def gen_code():
@@ -32,12 +32,11 @@ def create_session():
 
 
 @session.get('/<room>')
-def get_users(room):
+def get_session(room):
     if room not in rooms:
         return jsonify({})
-    users = rooms[room].users
-    owner = rooms[room].owner
-    return jsonify({'users': users, 'owner': owner})
+    room = rooms[room]
+    return jsonify({'users': room.users, 'owner': room.owner, 'state': room.state, 'match': room.match})
 
 
 @sio.on('join')
@@ -48,37 +47,40 @@ def join_session(data):
         join_room(room)
         if user not in rooms[room].users:
             rooms[room].users.append(user)
-            emit('joined', user, to=room, include_self=True)
+            emit('joined', user, to=room)
 
 
 @sio.on('leave')
 def leave_session(data):
-    json = loads(data)
-    user = json['user']
-    room = json['room']
+    user = data['user']
+    room = data['room']
     leave_room(room)
-    emit('left', user, to=room, include_self=True)
+    if room in room[rooms] and user in rooms[room].users:
+        rooms[room].users.remove(user)
+    emit('left', user, to=room)
 
 
 @sio.on('start')
 def start_session(room):
-    emit('started', to=room, include_self=True)
+    if room in rooms:
+        rooms[room].state = 'swipe'
+    emit('started', to=room)
 
 
 @sio.on('rate')
 def rate_movie(data):
-    json = loads(data)
-    room = json['room']
-    user = json['user']
-    movie = json['slug']
-    accept = json['like']
-    if room in rooms:
-        if user not in rooms[room]['ratings']:
-            rooms[room]['ratings'][user] = {}
-        rooms[room]['ratings'][user][movie] = accept
-        for user in rooms[room]['users']:
-            if user in rooms[room]['ratings']:
-                if movie not in rooms[room]['ratings'][user] or not rooms[room]['ratings'][user][movie]:
+    room = data['room']
+    user = data['user']
+    movie = data['slug']
+    accept = data['like']
+    if room in rooms and user in rooms[room].users:
+        if user not in rooms[room].ratings:
+            rooms[room].ratings[user] = {}
+        rooms[room].ratings[user][movie] = accept
+        for user in rooms[room].users:
+            if user in rooms[room].ratings:
+                if movie not in rooms[room].ratings[user] or not rooms[room].ratings[user][movie]:
                     return
-        emit('match', movie, to=room, include_self=True)
-        del rooms[room]
+        rooms[room].state = 'match'
+        rooms[room].match = movie
+        emit('matched', movie, to=room)

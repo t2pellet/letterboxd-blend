@@ -7,16 +7,16 @@ const client = axios.create({
   baseURL: `${import.meta.env.VITE_API_ENDPOINT}/users`,
 });
 
-async function getExists(name: string): Promise<boolean> {
-  if (!name) return false;
+async function getExists(name: string): Promise<{ name: string; exists: boolean }> {
+  if (!name) return { name, exists: false };
   const result = await client.get(`${name}/exists`);
-  return result.data.exists;
+  return { name, exists: result.data.exists };
 }
 
 export function useExists(name: Ref<string>) {
   return useQuery({
     queryKey: ['exists', name],
-    queryFn: async () => await getExists(name.value),
+    queryFn: async () => getExists(name.value),
   });
 }
 
@@ -24,10 +24,7 @@ export function useBatchExists(names: Ref<string[]>, debounceMs = 150) {
   return useBatchQuery(
     names,
     (name) => ['exists', name],
-    async (name) => {
-      const exists = await getExists(name);
-      return { name, exists };
-    },
+    async (name) => getExists(name),
     (total, result: { name: string; exists?: boolean }) => {
       if (result.exists !== undefined) {
         total[result.name] = result.exists;

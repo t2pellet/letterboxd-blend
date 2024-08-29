@@ -1,18 +1,18 @@
 <template>
   <div
     ref="poster"
-    class="poster flex flex-col">
+    class="poster flex flex-col"
+    @click="onClick">
     <cached-image
+      :class="{ 'cursor-pointer': clickable }"
       :src="`${env.API_URL}/posters/${film.slug}`"
       :alt="film.name"
-      :width="180"
-      :height="270" />
+      :width="width"
+      :height="height" />
     <div
-      v-if="!avatarsResult.isLoading"
+      v-if="!avatarsResult.isPending"
       class="absolute bottom-0 z-20">
-      <div
-        class="avatar-container flex gap-1 overflow-y-hidden pt-8 -ml-4 pl-5 w-[180px]"
-        :class="{ hovered: hovering }">
+      <div :class="avatarsClass">
         <div
           v-for="(user, idx) in users"
           :key="`avatar-${film.no}-${idx}`"
@@ -35,18 +35,38 @@
   import type { WatchlistEntry } from '@/types/watchlist';
   import { useElementHover } from '@vueuse/core';
 
-  const props = defineProps<{
+  interface Props {
     users: string[];
     film: WatchlistEntry;
-  }>();
+    width?: number;
+    clickable?: boolean;
+  }
+  const props = withDefaults(defineProps<Props>(), {
+    width: 180,
+    clickable: false,
+  });
 
   // Data
   const users = computed(() => props.users);
   const avatarsResult = useBatchAvatar(users);
 
+  // Computed
+  const avatarsClass = computed(() => {
+    let str = `avatar-container flex gap-1 overflow-y-hidden pt-8 -ml-4 pl-5 w-[${props.width}px]`;
+    if (hovering.value) str = str + ' hovered';
+    return str;
+  });
+  const height = computed(() => Math.round(props.width * 1.5));
+
   // Interaction
   const poster = ref();
   const hovering = useElementHover(poster);
+
+  function onClick() {
+    if (props.clickable) {
+      window.open(`https://letterboxd.com/film/${props.film.slug}`);
+    }
+  }
 </script>
 
 <style lang="scss" scoped>

@@ -5,9 +5,10 @@
   import { useBatchFollowing } from '@/api';
   import { useBatchExists } from '@/api/exists';
   import { uniq } from 'lodash';
+  import { useSessionStorage } from '@vueuse/core';
 
   // Data Fetching
-  const users = ref<string[]>(['', '']);
+  const users = useSessionStorage('users', ['', '']);
   const existsResult = useBatchExists(
     computed(() => {
       return users.value.filter((user) => user);
@@ -43,7 +44,7 @@
   function isExistingUser(user: string) {
     return existsResult.value.data[user] === true;
   }
-  function isLoadingUser(user: string) {
+  function isPendingUser(user: string) {
     return !!user?.length && existsResult.value.data[user] === undefined;
   }
   function viewResult() {
@@ -63,7 +64,8 @@
       :suggestions="suggestions"
       :warning="isMissingUser(user)"
       :success="isExistingUser(user)"
-      :loading="isLoadingUser(user)"
+      :loading="isPendingUser(user)"
+      :initial-value="user"
       @change="(value: string) => updateUser(idx, value)" />
     <div class="flex gap-2">
       <button

@@ -13,7 +13,7 @@
         height="192"
         alt="Letterboxd Logo" />
     </RouterLink>
-    <h1 class="text-primary text-xl font-bold italic">BLEND</h1>
+    <h1 class="text-primary text-xl font-bold italic">Movie-Mix</h1>
     <div class="divider my-2 sm:my-4" />
     <RouterView />
   </main>

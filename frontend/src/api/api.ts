@@ -26,11 +26,11 @@ export function useBatchQuery<T, K, R, C>(
   return useQueries({
     queries: debouncedQueries as never,
     combine: (results) => ({
-      isLoading: results.some((r) => r.isLoading),
+      isPending: results.some((r) => r.isPending),
       data: results
         .map((r) => r.data as R | undefined)
         .filter((r) => r !== undefined)
-        .reduce(combineMapper, {}),
+        .reduce(combineMapper, {}) as Record<string | number | symbol, C>,
     }),
   });
 }

@@ -74,7 +74,7 @@
     <div
       v-for="item in innerList"
       :key="getKey(item)"
-      :class="{ selected: selecting }">
+      :class="{ selected: selecting }"
       class="carousel-item flex flex-col text-center relative">
       <slot
         name="item"

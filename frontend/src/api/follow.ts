@@ -29,7 +29,7 @@ export function useBatchFollowing(names: Ref<string[]>, debounceMs: number = 100
       return getFollowing(name);
     },
     (total: Record<string, string[]>, result: Following) => {
-      if (result.following) {
+      if (result?.following) {
         total[result.name] = Object.keys(result.following);
       }
       return total;
