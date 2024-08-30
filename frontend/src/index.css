@@ -8,3 +8,8 @@
     height: 100vh;
     width: 100vw;
 }
+
+html,body {
+    overscroll-behavior: none;
+    overflow-x: hidden;
+}

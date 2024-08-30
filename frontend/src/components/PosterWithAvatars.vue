@@ -33,7 +33,7 @@
   import { computed, ref } from 'vue';
   import { useBatchAvatar } from '@/api';
   import type { WatchlistEntry } from '@/types/watchlist';
-  import { useElementHover } from '@vueuse/core';
+  import { breakpointsTailwind, useBreakpoints, useElementHover } from '@vueuse/core';
 
   interface Props {
     users: string[];
@@ -45,15 +45,17 @@
     width: 180,
     clickable: false,
   });
+  const breakpoints = useBreakpoints(breakpointsTailwind);
 
   // Data
   const users = computed(() => props.users);
+  const isSizeSM = breakpoints.smallerOrEqual('sm');
   const avatarsResult = useBatchAvatar(users);
 
   // Computed
   const avatarsClass = computed(() => {
     let str = `avatar-container flex gap-1 overflow-y-clip overflow-x-visible pt-8 -ml-4 pl-5 w-[${props.width}px]`;
-    if (hovering.value) str = str + ' hovered';
+    if (hovering.value || isSizeSM.value) str = str + ' hovered';
     return str;
   });
   const height = computed(() => Math.round(props.width * 1.5));
