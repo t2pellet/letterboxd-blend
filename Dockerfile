@@ -19,7 +19,6 @@ COPY --from=frontend-stage /app/dist /usr/share/nginx/html
 COPY frontend/nginx.conf /etc/nginx/conf.d/default.conf
 COPY backend/requirements.txt .
 RUN pip3 install -r requirements.txt
-RUN pip install --force-reinstall git+https://github.com/nmcassa/letterboxdpy.git
 COPY ./backend/. .
 EXPOSE 80
 CMD ["/bin/bash","-c","./start.sh"]
