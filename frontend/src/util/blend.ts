@@ -62,7 +62,7 @@ export function useBlend(users: Ref<string[]>, threshold: MaybeRef<number>, coun
   }
 
   watch(
-    () => isPending.value,
+    () => watchlistsResult.value.isPending,
     (value) => {
       if (!value) {
         data.value = getBlendedList(watchlistsResult.value.data, countNeeded.value);
