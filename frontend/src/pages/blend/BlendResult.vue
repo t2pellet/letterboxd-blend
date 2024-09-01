@@ -61,6 +61,7 @@
       :list="blendedList"
       :infinite="false"
       :item-key="({ entry }: WatchlistItem) => entry.slug">
+      <!-- @ts-ignore -->
       <template #item="{ item }">
         <a
           class="relative"

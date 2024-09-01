@@ -2,7 +2,7 @@
   <poster-with-avatars
     v-if="session"
     class="mt-2"
-    :film="matchEntry"
+    :film="matchEntry as WatchlistEntry"
     :users="matchUsers"
     :width="270"
     :clickable="true" />
@@ -14,6 +14,7 @@
   import type { Session } from '@/api/session';
   import { useWatchlists } from '@/api';
   import { usersForSlug } from '@/util/blend';
+  import type { WatchlistEntry } from '@/types/watchlist';
 
   const session = inject<Ref<Session>>('session');
   const sessionUsers = computed(() => session?.value.users ?? []);

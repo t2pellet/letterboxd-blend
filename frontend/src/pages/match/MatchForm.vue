@@ -45,9 +45,9 @@
         type="text"
         placeholder="Letterboxd Username"
         :initial-value="user"
-        :warning="user.length && exists && !exists.exists"
-        :success="user.length && exists && exists.exists"
-        :loading="user.length && isPending"
+        :warning="!!user.length && exists && !exists.exists"
+        :success="!!user.length && exists && exists.exists"
+        :loading="!!user.length && isPending"
         @change="updateUser" />
     </div>
     <button

@@ -1,21 +1,21 @@
-<script setup lang="ts">
-  import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
+<script setup lang="ts" generic="T">
+  import { nextTick, onBeforeUnmount, onMounted, type Ref, ref } from 'vue';
   import { useInfiniteScroll } from '@vueuse/core';
 
   const props = defineProps<{
-    list: object[];
-    itemKey: string | ((item: object) => string);
+    list: T[];
+    itemKey: string | ((item: T) => string);
     infinite?: boolean;
   }>();
 
   const target = ref();
-  const innerList = ref<object[]>([]);
+  const innerList = ref([]) as Ref<T[]>;
   const initialized = ref(false);
   const teleporting = ref(false);
   const selecting = ref(false);
 
   // Methods
-  function getKey(entry: object) {
+  function getKey(entry: T) {
     if (typeof props.itemKey === 'function') {
       const key = props.itemKey(entry);
       return entry[key as keyof typeof entry] as string;
