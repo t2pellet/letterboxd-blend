@@ -1,7 +1,7 @@
 [[source]]
 url = "https://pypi.org/simple"
 verify_ssl = true
-name = "pypi"
+name = "letterboxd-blend-api"
 
 [packages]
 beautifulsoup4 = "==4.12.3"
@@ -31,10 +31,10 @@ requests = "==2.32.3"
 simple-websocket = "==1.0.0"
 soupsieve = "==2.5"
 urllib3 = "==2.2.2"
-waitress = "==3.0.0"
 werkzeug = "==3.0.3"
 wsproto = "==1.2.0"
 zipp = "==3.19.2"
+eventlet = "*"
 
 [dev-packages]
 

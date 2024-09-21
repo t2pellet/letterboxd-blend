@@ -13,7 +13,7 @@ class Room:
     def __init__(self, code, owner):
         self.code = code
         self.owner = owner
-        self.state = 'wait' # wait / swipe / match
+        self.state = 'wait'  # wait / swipe / match
         self.users = [owner]
         self.ratings = {}
         self.match = None
@@ -37,7 +37,6 @@ def get_session(room):
         return jsonify({})
     room = rooms[room]
     return jsonify({'users': room.users, 'owner': room.owner, 'state': room.state, 'match': room.match})
-
 
 @sio.on('join')
 def join_session(data):

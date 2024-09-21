@@ -10,6 +10,8 @@ COPY ./frontend/. .
 RUN yarn build
 
 FROM python:3.10-bullseye AS deploy-stage
+ENV PATH="/.venv/bin:$PATH"
+# Install application into container
 COPY start.sh .
 COPY nginx.sh .
 RUN chmod +rwx ./start.sh
@@ -19,6 +21,7 @@ COPY --from=frontend-stage /app/dist /usr/share/nginx/html
 COPY frontend/nginx.conf /etc/nginx/conf.d/default.conf
 COPY backend/requirements.txt .
 RUN pip3 install -r requirements.txt
-COPY ./backend/. .
+COPY backend/src/. .
+# Run the application
 EXPOSE 80
 CMD ["/bin/bash","-c","./start.sh"]
