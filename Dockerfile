@@ -18,7 +18,7 @@ RUN chmod +rwx ./start.sh
 RUN chmod +rwx ./nginx.sh
 RUN bash ./nginx.sh
 COPY --from=frontend-stage /app/dist /usr/share/nginx/html
-COPY frontend/nginx.conf /etc/nginx/conf.d/default.conf
+COPY frontend/nginx.conf /etc/nginx/conf.d/default.conf.template
 COPY backend/requirements.txt .
 RUN pip3 install -r requirements.txt
 COPY backend/src/. .
