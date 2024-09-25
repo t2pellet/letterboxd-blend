@@ -22,7 +22,7 @@
   // Interaction
   const swipeTarget = ref();
   const { lengthX, isSwiping, direction } = useSwipe(swipeTarget, {
-    threshold: 75,
+    threshold: 50,
     onSwipeEnd: (_e, direction) => {
       if (direction === 'left' || direction === 'right') {
         rateMovie(direction !== 'left');

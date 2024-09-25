@@ -1,10 +1,10 @@
 <template>
-  <header class="sticky">
-    <div class="navbar sticky flex-row-reverse px-4 sm:px-8 py-1 sm:py-4">
+  <header class="h-10">
+    <div class="navbar absolute flex-row-reverse px-4 sm:px-8 py-1 sm:py-4">
       <theme-switch />
     </div>
   </header>
-  <main class="flex flex-col flex-grow items-center px-8 sm:px-24 py-4 sm:py-12">
+  <main class="flex flex-col items-center px-8 sm:px-24 py-4 sm:py-12">
     <RouterLink to="/">
       <img
         class="mb-4 rounded-xl"
