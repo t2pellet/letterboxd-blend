@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "scraper"
+version = "0.1.0"
+description = "Letterboxd Scraper API"
+authors = ["Tenzin Pelletier <pelletier@tenzin.live>"]
+
+[tool.poetry.dependencies]
+python = "3.10.5"
+flask = "^3.1.0"
+flask-cors = "^5.0.0"
+letterboxdpy = {git = "https://github.com/nmcassa/letterboxdpy.git", rev = "9ac7d0c4c66822e10a9a18011cfe8156dcf7640e"}
+gunicorn = "^23.0.0"
+eventlet = "^0.38.0"
+lxml = "^5.3.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

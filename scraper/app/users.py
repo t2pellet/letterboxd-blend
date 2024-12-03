@@ -3,7 +3,6 @@ from letterboxdpy import user
 
 users = Blueprint('user', __name__)
 
-
 @users.route('/<name>/exists')
 def get_exists(name):
     try:
