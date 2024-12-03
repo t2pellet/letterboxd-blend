@@ -3,5 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    env_file:
+      - frontend/.env.prod
     ports:
       - "80:80"

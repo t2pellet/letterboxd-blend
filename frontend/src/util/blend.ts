@@ -1,9 +1,8 @@
 import type { MaybeRef, Ref } from 'vue';
 import { useWatchlists } from '@/api';
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref, unref, watch } from 'vue';
 import type Watchlist from '@/types/watchlist';
 import type { WatchlistEntry } from '@/types/watchlist';
-import { deboxMaybeRef } from '@/util/debox';
 
 interface MovieMapValue {
   entry: WatchlistEntry;
@@ -44,7 +43,7 @@ export function useBlend(users: Ref<string[]>, threshold: MaybeRef<number>, coun
   const watchlistsResult = useWatchlists(users);
   const countNeeded = computed(() => {
     const usersCount = users.value.length;
-    const formattedThreshold = deboxMaybeRef(threshold) > 1 ? deboxMaybeRef(threshold) / 100 : deboxMaybeRef(threshold);
+    const formattedThreshold = unref(threshold) > 1 ? unref(threshold) / 100 : unref(threshold);
     return Math.ceil(usersCount * formattedThreshold);
   });
 
@@ -58,7 +57,7 @@ export function useBlend(users: Ref<string[]>, threshold: MaybeRef<number>, coun
     return Object.keys(movieMap)
       .map((slug) => movieMap[slug])
       .sort((m1, m2) => m1.users.length - m2.users.length)
-      .slice(0, deboxMaybeRef(count));
+      .slice(0, unref(count));
   }
 
   watch(

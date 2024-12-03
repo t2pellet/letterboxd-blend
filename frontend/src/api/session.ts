@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useMutation, useQuery } from '@tanstack/vue-query';
 import type { MaybeRef } from 'vue';
 import { io } from 'socket.io-client';
-import { deboxMaybeRef } from '@/util/debox';
+import { unref } from 'vue';
 
 const client = axios.create({
   baseURL: `${import.meta.env.VITE_API_ENDPOINT}/session`,
@@ -39,7 +39,7 @@ export function usePostSession() {
 export function useSessionInfo(code: MaybeRef<string>) {
   return useQuery({
     queryKey: ['session', code],
-    queryFn: async () => await getSession(deboxMaybeRef(code)),
+    queryFn: async () => await getSession(unref(code)),
     staleTime: 0,
     gcTime: 0,
     refetchOnReconnect: true,

@@ -1,8 +1,7 @@
 import { useQueries, useQuery } from '@tanstack/vue-query';
 import axios from 'axios';
 import type { MaybeRef, Ref } from 'vue';
-import { computed } from 'vue';
-import { deboxMaybeRef } from '@/util/debox';
+import { computed, unref } from 'vue';
 
 const client = axios.create({
   baseURL: `${import.meta.env.VITE_API_ENDPOINT}/users`,
@@ -16,7 +15,7 @@ async function getAvatar(name: string): Promise<{ name: string; url: string }> {
 export function useAvatar(name: MaybeRef<string>) {
   return useQuery({
     queryKey: ['avatar', name],
-    queryFn: async () => await getAvatar(deboxMaybeRef(name)),
+    queryFn: async () => await getAvatar(unref(name)),
   });
 }
 

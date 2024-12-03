@@ -2,6 +2,7 @@ FROM node:lts-alpine AS frontend-stage
 WORKDIR /app
 ENV PATH /letterboxd-blend/node_modules/.bin:$PATH
 ENV VITE_API_ENDPOINT /api
+ENV VITE_BASE_URL https://letterboxd.tenzin.live
 ENV NODE_ENV production
 COPY frontend/package.json .
 COPY frontend/yarn.lock .
