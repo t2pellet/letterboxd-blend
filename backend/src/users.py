@@ -20,7 +20,7 @@ def get_profile(name):
 
 
 @users.route("/<name>/watchlist")
-def get_watchlist(name):  # put application's code here
+def get_watchlist(name):
     user_instance = user.User(name)
     watchlist = user.user_watchlist(user_instance)
     return watchlist
