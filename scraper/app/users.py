@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify
-from letterboxdpy import user
+from letterboxdpy import user, movie
+import re
 
 users = Blueprint('user', __name__)
 

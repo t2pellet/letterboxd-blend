@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "scraper"
+name = "lblend-scraper"
 version = "0.1.0"
 description = "Letterboxd Scraper API"
 authors = ["Tenzin Pelletier <pelletier@tenzin.live>"]
