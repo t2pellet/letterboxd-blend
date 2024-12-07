@@ -1,4 +1,4 @@
-/// <reference types="vite/client" />
+/// <reference models="vite/client" />
 declare global {
   namespace NodeJS {
     interface ImportMeta {

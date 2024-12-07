@@ -1,22 +1,31 @@
----
-title: Flask
-description: A popular minimal server framework for Python
-tags:
-  - python
-  - flask
----
+## About
 
-# Python Flask Example
+This project was based off of with [express-generator-typescript](https://github.com/seanpmaxwell/express-generator-typescript).
 
-Backend for letterboxd-blend
+I changed it then to update the eslint rules, add prettier, husky, lint-staged, commitizen and conventional commits, as well as tweaking the base structure to be more to my liking.
 
-## ✨ Features
+## Available Scripts
 
-- Python
-- Flask
-- Socket.IO
+### `yarn dev`
 
-## 💁‍♀️ How to use
+Run the server in development mode.
 
-- Install Python requirements `pipenv install`
-- Start the server for development `python3 main.py`
+### `yarn lint`
+
+Check for linting errors.
+
+### `yarn build`
+
+Build the project for production.
+
+### `yarn start`
+
+Run the production build (Must be built first).
+
+### `yarn start -- --env="name of env file" (default is production).`
+
+Run production build with a different env file.
+
+## Additional Notes
+
+- If `yarn dev` gives you issues with bcrypt on MacOS you may need to run: `npm rebuild bcrypt --build-from-source`.
