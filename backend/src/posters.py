@@ -9,7 +9,8 @@ import re
 load_dotenv()
 
 posters = Blueprint('poster', __name__)
-api_key = os.environ['RPDB_API_KEY']
+api_key = os.getenv('RPDB_API_KEY')
+
 
 @posters.route('/<slug>')
 def get_poster(slug):
