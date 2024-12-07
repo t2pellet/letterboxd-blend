@@ -16,7 +16,7 @@
 
   // Fetched Data
   const users = computed(() => session?.value?.users ?? []);
-  const { data, isPending } = useBlend(users, 50, 50);
+  const { data, isPending } = useBlend(users, 51, 50);
   const blendList = ref<typeof data.value>([]);
 
   // Interaction
