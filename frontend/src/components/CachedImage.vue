@@ -29,8 +29,8 @@
 
   const { data, isPending } = useQuery({
     queryKey: ['img', () => props.src],
-    gcTime: 1000 * 60 * 60 * 24, // 1 day
-    staleTime: 1000 * 60 * 60 * 12, // 12 hours
+    gcTime: 1000 * 60 * 60 * 24 * 7, // 1 week
+    staleTime: 1000 * 60 * 60 * 24, // 1 day
     queryFn: async () => {
       const response = await axios.get(props.src, { responseType: 'arraybuffer' });
       return Buffer.from(response.data, 'binary').toString('base64');

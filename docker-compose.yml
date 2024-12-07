@@ -3,11 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    env_file:
+      - frontend/.env.prod
     ports:
       - "80:80"
-    environment:
-      PORT: ${PORT}
-      RPDB_API_KEY: ${RPDB_API_KEY}
-      VITE_API_ENDPOINT: ${VITE_API_ENDPOINT}
-      VITE_SOCKET_ENDPOINT: ${VITE_SOCKET_ENDPOINT}
-      VITE_BASE_URL: ${VITE_BASE_URL}
