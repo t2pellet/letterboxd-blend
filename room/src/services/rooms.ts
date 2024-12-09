@@ -16,9 +16,9 @@ export default class RoomsService {
     return !!this.rooms[id];
   }
 
-  createRoom(user: string, movies: string[]): Room {
+  createRoom(user: string): Room {
     const id = this.generateCode();
-    const room = new Room(id, movies, [user]);
+    const room = new Room(id, user);
     this.rooms[id] = room;
     return room;
   }

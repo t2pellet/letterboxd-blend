@@ -1,17 +1,14 @@
-import { Server } from 'socket.io';
-import EnvVars from '@/constants/env';
-import { NodeEnvs } from '@/constants/misc';
-import server from '@/server';
 import logger from 'jet-logger';
 import socketRoutes from '@/routes/socket';
+import io from '@/socket';
+import EnvVars from '@/constants/env';
+import server from '@/server';
 
-const io = new Server(server, {
-  cors: { origin: EnvVars.NodeEnv !== NodeEnvs.Production },
+const SERVER_START_MSG = 'Socket.IO server started on port: ' + EnvVars.Port.toString();
+server.listen(EnvVars.Port, () => {
+  logger.info(SERVER_START_MSG);
 });
 io.on('connection', (socket) => {
-  logger.info('connect');
-  socket.join(socket.data.id);
+  logger.info('Socket.IO connection');
   socketRoutes(socket);
 });
-
-export default io;

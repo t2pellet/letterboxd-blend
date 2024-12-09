@@ -1,32 +1,23 @@
 export interface Movie {
-  id: string;
-  vote?: boolean;
+  id: number;
+  vote: boolean;
 }
 
 export interface User {
   name: string;
-  vote?: boolean;
+  vote: boolean;
 }
 
 export default class Room {
-  public userMovies: Record<string, Movie[]> = {};
-  public movieUsers: Record<string, User[]> = {};
+  private userMovies: Record<string, Movie[]> = {};
+  private movieUsers: Record<number, User[]> = {};
+  private users: Set<string> = new Set();
+  private movies: Set<number> = new Set();
+  private isStarted: boolean = false;
   constructor(
-    public id: string,
-    public movies: string[] = [],
-    public users: string[] = [],
-  ) {
-    users.forEach((u) => {
-      this.userMovies[u] = this.movies.map((m) => ({
-        id: m,
-      }));
-    });
-    movies.forEach((m) => {
-      this.movieUsers[m] = this.users.map((u) => ({
-        name: u,
-      }));
-    });
-  }
+    public readonly id: string,
+    public readonly owner: string,
+  ) {}
 
   get match() {
     const result = Object.entries(this.movieUsers).find(([, users]) => {
@@ -35,33 +26,46 @@ export default class Room {
     return result ? result[0] : null;
   }
 
-  get moviesSorted() {
-    const usersToValue = (users: User[]) =>
-      users
-        .map((u) => (u.vote === true ? 1 : u.vote === false ? -1 : 0))
-        .reduce((res: number, x) => res + x, 0);
+  get started() {
+    return this.isStarted;
+  }
 
-    return Object.entries(this.movieUsers)
-      .sort(([, users], [, users2]) => {
-        return usersToValue(users) - usersToValue(users2);
-      })
-      .map(([id]) => id);
+  get moviesSorted() {
+    const movieValue = (movie: number) => {
+      return this.movieUsers[movie]
+        .map((u) => (u.vote ? 1 : -1))
+        .reduce((res: number, x) => res + x, 0);
+    };
+
+    return Array.from(this.movies).sort((movie1, movie2) => {
+      return movieValue(movie2) - movieValue(movie1);
+    });
+  }
+
+  start() {
+    this.isStarted = true;
   }
 
   addUser(user: string) {
-    if (!this.users.includes(user)) {
-      this.users.push(user);
-      this.userMovies[user] = this.movies.map((m) => ({
-        id: m,
-      }));
-      Object.values(this.movieUsers).forEach((users) => {
-        users.push({ name: user });
-      });
+    if (!this.users.has(user)) {
+      this.users.add(user);
+      this.userMovies[user] = [];
     }
   }
 
+  setMovies(movies: number[]) {
+    this.movies = new Set(movies);
+    this.movieUsers = {};
+    this.movies.forEach((movie) => {
+      this.movieUsers[movie] = [];
+    });
+    this.users.forEach((user) => {
+      this.userMovies[user] = [];
+    });
+  }
+
   removeUser(user: string) {
-    this.users = this.users.splice(this.users.indexOf(user), 1);
+    this.users.delete(user);
     delete this.userMovies[user];
     Object.values(this.movieUsers).forEach((users) => {
       users.splice(
@@ -75,11 +79,11 @@ export default class Room {
     return this.userMovies[user] ?? [];
   }
 
-  usersForMovie(movie: string) {
+  usersForMovie(movie: number) {
     return this.movieUsers[movie] ?? [];
   }
 
-  voteForUser(userName: string, movieID: string, vote: boolean) {
+  voteForUser(userName: string, movieID: number, vote: boolean) {
     const movies = this.moviesForUser(userName);
     const movie = movies.find((m) => m.id === movieID);
     if (movie) {
@@ -97,6 +101,7 @@ export default class Room {
       id: this.id,
       movies: this.moviesSorted,
       users: this.users,
+      started: this.isStarted,
     };
   }
 }
