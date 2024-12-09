@@ -1,13 +1,22 @@
 import express from "express";
-import { createProxyMiddleware } from "http-proxy-middleware";
-import env from "@/constants/env";
+import { param } from "express-validator";
+import validate from "@/middlewares/validate";
+import roomHandlers from "@/handlers/room";
 
 const router = express.Router();
-const httpProxy = createProxyMiddleware({
-  target: env.RoomServiceURL,
-  changeOrigin: true,
-});
 
-router.use(httpProxy);
+router.get(
+  "/:id",
+  param("id").isString().isLength({ min: 6, max: 6 }),
+  validate,
+  roomHandlers.getRoomHandler,
+);
+router.post("/", roomHandlers.createRoomHandler);
+router.delete(
+  "/:id",
+  param("id").isString().isLength({ min: 6, max: 6 }),
+  validate,
+  roomHandlers.deleteRoomHandler,
+);
 
 export default router;

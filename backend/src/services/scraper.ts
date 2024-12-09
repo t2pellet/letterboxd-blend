@@ -52,6 +52,6 @@ export default class Scraper {
           slugs: slugs.join(","),
         },
       })
-      .then((r) => r.data as { slug: string; id: string }[]);
+      .then((r) => r.data as { slug: string; id: number }[]);
   }
 }
