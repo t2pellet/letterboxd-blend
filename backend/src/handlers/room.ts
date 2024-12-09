@@ -3,6 +3,8 @@ import getData from "@/utils/data";
 import RoomService from "@/services/room";
 import getBlendedList from "@/utils/blend";
 import TMDB from "@/services/tmdb";
+import { RouteError } from "@/types";
+import { HttpStatusCodes } from "@/constants/http";
 
 type RoomParams = { id: string };
 const createRoomHandler: RequestHandler = async (req, res) => {
@@ -44,7 +46,16 @@ const startRoomHandler: RequestHandler = async (req, res) => {
   const service = new RoomService(user);
   // Get blended movies, add to room
   const room = await service.getRoom(id);
+  if (!room.users.length) {
+    throw new RouteError(
+      HttpStatusCodes.BAD_REQUEST,
+      "Cannot start empty room",
+    );
+  }
   const movies = await getBlendedList({ names: room.users });
+  if (!movies.length) {
+    throw new RouteError(HttpStatusCodes.BAD_REQUEST, "Empty blend");
+  }
   const ids = movies.map((m) => m.id);
   await service.updateRoom(id, ids);
   // Start room

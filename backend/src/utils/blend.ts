@@ -12,6 +12,7 @@ async function getBlendedList({
   top = 10,
   threshold = 0.5,
 }: BlendParams) {
+  if (!names.length) return [];
   // Scrape watchlist entries from letterboxd
   const promises = names.map(async (name) => {
     const watchlist = await Scraper.getInstance().watchlist(name);
