@@ -10,6 +10,7 @@ import { HttpStatusCodes } from "@/constants/http";
 import { NodeEnvs } from "@/constants/misc";
 import { RouteError } from "@/types/errors";
 import routes from "./routes";
+import { AxiosError } from "axios";
 
 // **** Variables **** //
 
@@ -44,11 +45,14 @@ app.use(
     _next: NextFunction,
   ) => {
     logger.err(err, true);
-    let status = HttpStatusCodes.INTERNAL_SERVER_ERROR;
+    let status: number = HttpStatusCodes.INTERNAL_SERVER_ERROR;
     let stack: string | undefined = undefined;
     if (err instanceof RouteError) {
       status = err.statusCode;
       stack = err.stack;
+    } else if (err instanceof AxiosError) {
+      status = err.status as number;
+      stack = err.response?.data;
     }
     return res.status(status).json({
       error: err.message,
