@@ -1,7 +1,4 @@
 import express from "express";
-import { routeHandlerExample } from "@/handlers/blend";
-import { param } from "express-validator";
-import validate from "@/middlewares/validate";
 import { createProxyMiddleware } from "http-proxy-middleware";
 import env from "@/constants/env";
 

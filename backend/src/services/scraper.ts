@@ -18,34 +18,40 @@ export default class Scraper {
   }
 
   async exists(user: string) {
-    return this.service.get(`/user/${user}/exists`);
+    return this.service.get(`/users/${user}/exists`);
   }
 
   async avatar(user: string) {
-    return this.service.get(`/user/${user}/avatar`);
+    return this.service.get(`/users/${user}/avatar`);
   }
 
   async watchlist(user: string) {
-    return this.service.get<any, List>(`/user/${user}/watchlist`);
+    return this.service
+      .get<any>(`/users/${user}/watchlist`)
+      .then((r) => r.data as List);
   }
 
   async watched(user: string) {
-    return this.service.get<any, List>(`/user/${user}/watched`);
+    return this.service
+      .get<any>(`/users/${user}/watched`)
+      .then((r) => r.data as List);
   }
 
   async followers(user: string) {
-    return this.service.get(`/user/${user}/followers`);
+    return this.service.get(`/users/${user}/followers`).then((r) => r.data);
   }
 
   async following(user: string) {
-    return this.service.get(`/user/${user}/following`);
+    return this.service.get(`/users/${user}/following`).then((r) => r.data);
   }
 
   async ids(slugs: string[]) {
-    return this.service.get<any, { slug: string; id: string }[]>(`/movie/ids`, {
-      params: {
-        slugs,
-      },
-    });
+    return this.service
+      .get(`/movies/id`, {
+        params: {
+          slugs: slugs.join(","),
+        },
+      })
+      .then((r) => r.data as { slug: string; id: string }[]);
   }
 }

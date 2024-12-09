@@ -32,7 +32,7 @@ if (EnvVars.NodeEnv === NodeEnvs.Production.valueOf()) {
 }
 
 // Routes
-app.use("/api", routes);
+app.use("/", routes);
 
 // Add error handler
 app.use(
@@ -44,11 +44,16 @@ app.use(
     _next: NextFunction,
   ) => {
     logger.err(err, true);
-    let status = HttpStatusCodes.BAD_REQUEST;
+    let status = HttpStatusCodes.INTERNAL_SERVER_ERROR;
+    let stack: string | undefined = undefined;
     if (err instanceof RouteError) {
       status = err.statusCode;
+      stack = err.stack;
     }
-    return res.status(status).json({ error: err.message });
+    return res.status(status).json({
+      error: err.message,
+      stack,
+    });
   },
 );
 

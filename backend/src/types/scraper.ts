@@ -10,7 +10,7 @@ export default interface List {
   available: boolean;
   name: string;
   count: number;
-  data: ListEntry[];
+  data: Record<number, ListEntry>;
   data_count: number;
   last_page: number;
 }

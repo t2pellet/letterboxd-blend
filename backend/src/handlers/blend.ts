@@ -1,50 +1,51 @@
 import { RequestHandler } from "express";
 import Scraper from "@/services/scraper";
-import { ListEntry } from "@/types/scraper";
-import { HttpStatusCodes } from "@/constants/http";
 import TMDB from "@/services/tmdb";
+import { getData } from "@/utils/data";
 
 const scraperService = Scraper.getInstance();
 
+type BlendHandlerQuery = { names: string[]; top: number; threshold: number };
 const getBlendHandler: RequestHandler = async (req, res) => {
-  const { names, top, threshold } = req.params;
-  const namesArray = names.split(",");
-  const promises = namesArray.map((name) => {
-    return scraperService.watchlist(name);
-  });
-  const responses = await Promise.all(promises);
+  const { names, top, threshold } = getData<BlendHandlerQuery>(req);
+  const minCount = Math.round(names.length * Number(threshold));
 
-  const entryMap: Record<string, { entry: ListEntry; users: string[] }> = {};
-  responses.forEach((list) => {
-    list.data.forEach((entry) => {
-      if (!entryMap[entry.slug]) {
-        entryMap[entry.slug] = { entry, users: [] };
-      }
-      entryMap[entry.slug].users.push(list.name);
+  const promises = names.map(async (name) => {
+    const watchlist = await scraperService.watchlist(name);
+    return Object.values(watchlist.data).map((x) => ({
+      slug: x.slug,
+      user: name,
+    }));
+  });
+  const responses = await Promise.all(promises).then((r) => r.flat());
+
+  // Build map of watched movies
+  const entryMap: Record<string, string[]> = {};
+  responses.forEach((entry) => {
+    if (!entryMap[entry.slug]) {
+      entryMap[entry.slug] = [];
+    }
+    entryMap[entry.slug].push(entry.user);
+  });
+
+  // Populate with slug and id and TMDB data
+  const blendedList = Object.entries(entryMap)
+    .filter(([, v]) => v.length >= minCount)
+    .sort(([, v1], [, v2]) => v2.length - v1.length)
+    .slice(0, top);
+  const slugs = blendedList.map(([slug]) => slug);
+  const resultsPromise = await scraperService.ids(slugs).then((value) => {
+    return value.map(async (r) => {
+      const data = await TMDB.movie.getDetails({
+        pathParameters: { movie_id: r.id },
+      });
+      return { ...r, users: entryMap[r.slug], data: data.data };
     });
   });
 
-  const minCount = Math.floor(names.length * Number(threshold));
-  const blendedList = Object.values(entryMap)
-    .filter(({ users }) => {
-      return users.length >= minCount;
-    })
-    .sort(({ users: users1 }, { users: users2 }) => {
-      return users1.length - users2.length;
-    })
-    .map((value) => ({
-      slug: value.entry.slug,
-      users: value.users,
-    }))
-    .slice(0, Number(top));
-
-  const slugs = blendedList.reduce((res: string[], x) => {
-    return [...res, x.slug];
-  }, []);
-  const ids = await scraperService.ids(slugs);
-
-  // Do something
-  return res.status(HttpStatusCodes.OK).send(blendedList);
+  const results = await Promise.all(resultsPromise);
+  res.status(200).send(results);
 };
 
 export { getBlendHandler };
+export type { BlendHandlerQuery };
